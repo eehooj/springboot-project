@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script th:src="@{/inc/js/jquery.min.js}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LceRwEVAAAAAMAnoXnoPLm-6M-zRAJSnhSOgFyj"></script>
+    <title>google reCaptcha V3</title>
+</head>
+<body>
+    <h1>reCaptcha test page</h1>
+    <form action="recaptcha">
+        <input type="text" name="inputbox">
+        <input type="button" class="_recaprchaBtn" value="로봇 검사하기">
+    </form>
+
+    <script type="text/javascript">
+        $(function(){
+            $("._recaprchaBtn").on("click", function(){
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('6LceRwEVAAAAAMAnoXnoPLm-6M-zRAJSnhSOgFyj', {
+                        action : 'submit'
+                    }).then(function(token) {
+                        console.log(token);
+                        $.ajax({
+                            url: '/captcha',
+                            data : token,
+                            method : 'POST',
+                            dataType : 'json',
+                            processData : true,
+                            crossDomain : true,
+                            xhrFields : {
+                                withCredentials : true
+                            }
+                        }).done(
+                            function(data) {
+                                var response = data.resultResponse;
+                                if (response.result === 200) {
+                                    console.log(response);
+                                } else {
+                                    alert(response.message);
+                                }
+                            }).always(function() {
+                            //$wrap.data('posting', false);
+                        });
+                    });
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
