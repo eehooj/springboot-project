@@ -29,7 +29,7 @@ public class ReCaptChaController {
         } catch (Exception exception) {
             return ResponseEntity.badRequest().body("로봇임");
         }
-
+ 
         return ResponseEntity.ok("로봇 아님");
     }
 
