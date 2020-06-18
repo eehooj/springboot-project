@@ -5,24 +5,18 @@ import com.github.torissi.resttemplate.service.CaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.Map;
+
+@RestController
 public class ReCaptChaController {
 
     @Autowired
     CaptchaService captchaService;
 
-    @GetMapping("/")
-    public String indexPage() {
-        return "index";
-    } //view resolver
-
     @PostMapping("/captcha") //rest api
-    public @ResponseBody ResponseEntity<String> captcha(@RequestBody String token) {
+    public ResponseEntity<String> captcha(@RequestParam String token) {
         ReCaptchaResponse res;
         try {
             res = captchaService.reCaptchaDecision(token);
