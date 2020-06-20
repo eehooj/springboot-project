@@ -1,7 +1,7 @@
 package com.github.torissi.resttemplate.controller;
 
 import com.github.torissi.resttemplate.model.response.ResultResponse;
-import com.github.torissi.resttemplate.service.CaptchaService;
+import com.github.torissi.resttemplate.service.ReCaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReCaptChaController {
 
     @Autowired
-    CaptchaService captchaService;
+    ReCaptchaService reCaptchaService;
 
     @PostMapping("/captcha") //rest api
     public ResponseEntity<ResultResponse> captcha(@RequestParam String token) {
@@ -21,7 +21,7 @@ public class ReCaptChaController {
         Boolean res = false;
 
         try {
-            res = captchaService.reCaptchaDecision(token);
+            res = reCaptchaService.reCaptchaDecision(token);
         } catch (Exception exception) {
             resultResponse.setMessage(exception.getMessage());
             resultResponse.setCode(400);

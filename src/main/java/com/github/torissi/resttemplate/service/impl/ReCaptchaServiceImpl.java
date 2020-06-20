@@ -1,8 +1,9 @@
 package com.github.torissi.resttemplate.service.impl;
 
 import com.github.torissi.resttemplate.exception.ReCaptchaException;
-import com.github.torissi.resttemplate.model.response.ReCaptchaResponse;
-import com.github.torissi.resttemplate.service.CaptchaService;
+import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
+import com.github.torissi.resttemplate.repository.ReCaptcahRepository;
+import com.github.torissi.resttemplate.service.ReCaptchaService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,21 +13,25 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class CaptchaServiceImpl implements CaptchaService {
+public class ReCaptchaServiceImpl implements ReCaptchaService {
 
     private String reCaptchaApi = "https://www.google.com/recaptcha/api/siteverify";
 
     private String secretKey = "6LceRwEVAAAAAKZNtjFAJRHa88ou871oe3Zk34K5";
+
+    private ReCaptcahRepository reCaptcahRepository;
+
+    public ReCaptchaServiceImpl(ReCaptcahRepository reCaptcahRepository) {
+        this.reCaptcahRepository = reCaptcahRepository;
+    }
 
     @Override
     public Boolean reCaptchaDecision(String token) throws ReCaptchaException {
         RestTemplate restTemplate = new RestTemplate(); //restremplate 사용
 
         HttpHeaders headers = new HttpHeaders();
-        //headers.setContentType(MediaType.APPLICATION_JSON);
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); //MultiValueMap을 지원
-
 
         MultiValueMap<String, String> mvm = new LinkedMultiValueMap<>();
         mvm.add("secret", secretKey);
@@ -34,11 +39,12 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mvm, headers);
 
-        ReCaptchaResponse reCaptchaResponse = restTemplate.postForObject(reCaptchaApi, request, ReCaptchaResponse.class);
+        ReCaptchaEntity reCaptchaEntity = restTemplate.postForObject(reCaptchaApi, request, ReCaptchaEntity.class);
 
+        reCaptcahRepository.save(reCaptchaEntity);
 
-        if (reCaptchaResponse.getSuccess()) {
-            if (reCaptchaResponse.getScore() > 0.3) {
+        if (reCaptchaEntity.getSuccess()) {
+            if (reCaptchaEntity.getScore() > 0.3) {
                 return true;
             } else {
                 throw new ReCaptchaException("인증에 실패하였습니다. 다시 시도해 주세요.");
