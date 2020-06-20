@@ -1,5 +1,6 @@
 package com.github.torissi.resttemplate.service.impl;
 
+import com.github.torissi.resttemplate.exception.ReCaptchaException;
 import com.github.torissi.resttemplate.model.response.ReCaptchaResponse;
 import com.github.torissi.resttemplate.service.CaptchaService;
 import org.junit.jupiter.api.Test;
@@ -26,20 +27,19 @@ class CaptchaServiceImplTest {
     CaptchaService captchaService;
 
     @Test
-    public void getScore() {
+    public void getScore() throws ReCaptchaException {
         RestTemplate restTemplate = new RestTemplate();
 
         MockRestServiceServer mockRestServiceServer
                 = MockRestServiceServer.bindTo(restTemplate).build();
 
-        String expectResult = "{\"success\" : true, \"hostname\" : \"localhost\"}";
+        String expectResult = "{\"success\" : false, \"hostname\" : \"localhost\"}";
         mockRestServiceServer.expect(requestTo("/captcha"))
                             .andRespond(withSuccess(expectResult, MediaType.APPLICATION_JSON));
 
 
-        ReCaptchaResponse reCaptchaResponse = captchaService.reCaptchaDecision(token);
+        Boolean reCaptchaResponse = captchaService.reCaptchaDecision(token);
 
-        assertThat(reCaptchaResponse.getSuccess()).isEqualTo("true");
-        assertThat(reCaptchaResponse.getHostname()).isEqualTo("localhost");
+        assertThat(reCaptchaResponse).isEqualTo("true");
     }
 }

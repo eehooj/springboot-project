@@ -30,17 +30,14 @@
                             xhrFields : {
                                 withCredentials : true
                             }
-                        }).done(
-                            function(data) {
-                                var response = data.resultResponse;
-                                if (response.result === 200) {
-                                    console.log(response);
-                                } else {
-                                    alert(response.message);
-                                }
-                            }).always(function() {
-                            //$wrap.data('posting', false);
-                        });
+                        }).done(function(data) {
+                            if (data.code == 200) {
+                                alert(data.message);
+                            } else {
+                                alert(data.message);
+                            }
+
+                        })
                     });
                 });
             });

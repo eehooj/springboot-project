@@ -1,5 +1,6 @@
 package com.github.torissi.resttemplate.service.impl;
 
+import com.github.torissi.resttemplate.exception.ReCaptchaException;
 import com.github.torissi.resttemplate.model.response.ReCaptchaResponse;
 import com.github.torissi.resttemplate.service.CaptchaService;
 import org.springframework.http.HttpEntity;
@@ -18,7 +19,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     private String secretKey = "6LceRwEVAAAAAKZNtjFAJRHa88ou871oe3Zk34K5";
 
     @Override
-    public ReCaptchaResponse reCaptchaDecision(String token) {
+    public Boolean reCaptchaDecision(String token) throws ReCaptchaException {
         RestTemplate restTemplate = new RestTemplate(); //restremplate 사용
 
         HttpHeaders headers = new HttpHeaders();
@@ -33,10 +34,18 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mvm, headers);
 
-        ReCaptchaResponse model = restTemplate.postForObject(reCaptchaApi, request, ReCaptchaResponse.class);
+        ReCaptchaResponse reCaptchaResponse = restTemplate.postForObject(reCaptchaApi, request, ReCaptchaResponse.class);
 
 
-        return model;
+        if (reCaptchaResponse.getSuccess()) {
+            if (reCaptchaResponse.getScore() > 0.3) {
+                return true;
+            } else {
+                throw new ReCaptchaException("인증에 실패하였습니다. 다시 시도해 주세요.");
+            }
+        } else {
+            throw new ReCaptchaException("인증에 실패하였습니다. 다시 시도해 주세요.");
+        }
     }
 
 }
