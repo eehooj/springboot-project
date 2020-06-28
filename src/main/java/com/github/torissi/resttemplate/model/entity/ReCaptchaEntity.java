@@ -4,14 +4,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
 
 @Getter
-@Entity
+@Setter
 public class ReCaptchaEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recapId;
 
     private Boolean success;

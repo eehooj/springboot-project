@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    @RequestMapping("/")
+   /* @RequestMapping("/")
     public String indexPage() {
         return "index";
-    } //view resolver
+    }*/ //view resolver
 }

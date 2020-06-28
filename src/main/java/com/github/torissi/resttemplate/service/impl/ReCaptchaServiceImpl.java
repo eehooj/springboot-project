@@ -1,5 +1,6 @@
 package com.github.torissi.resttemplate.service.impl;
 
+import com.github.torissi.resttemplate.dao.ReCaptchaDao;
 import com.github.torissi.resttemplate.exception.ReCaptchaException;
 import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
 import com.github.torissi.resttemplate.repository.ReCaptcahRepository;
@@ -12,6 +13,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.SQLException;
+import java.util.List;
+
 @Service
 public class ReCaptchaServiceImpl implements ReCaptchaService {
 
@@ -19,14 +23,14 @@ public class ReCaptchaServiceImpl implements ReCaptchaService {
 
     private String secretKey = "6LceRwEVAAAAAKZNtjFAJRHa88ou871oe3Zk34K5";
 
-    private ReCaptcahRepository reCaptcahRepository;
+    private ReCaptchaDao reCaptchaDao;
 
-    public ReCaptchaServiceImpl(ReCaptcahRepository reCaptcahRepository) {
-        this.reCaptcahRepository = reCaptcahRepository;
+    public ReCaptchaServiceImpl(ReCaptchaDao reCaptchaDao) {
+        this.reCaptchaDao = reCaptchaDao;
     }
 
     @Override
-    public Boolean reCaptchaDecision(String token) throws ReCaptchaException {
+    public Boolean reCaptchaDecision(String token) throws ReCaptchaException, SQLException {
         RestTemplate restTemplate = new RestTemplate(); //restremplate 사용
 
         HttpHeaders headers = new HttpHeaders();
@@ -41,7 +45,7 @@ public class ReCaptchaServiceImpl implements ReCaptchaService {
 
         ReCaptchaEntity reCaptchaEntity = restTemplate.postForObject(reCaptchaApi, request, ReCaptchaEntity.class);
 
-        reCaptcahRepository.save(reCaptchaEntity);
+        reCaptchaDao.insertReCaptcha(reCaptchaEntity);
 
         if (reCaptchaEntity.getSuccess()) {
             if (reCaptchaEntity.getScore() > 0.3) {
@@ -52,6 +56,13 @@ public class ReCaptchaServiceImpl implements ReCaptchaService {
         } else {
             throw new ReCaptchaException("인증에 실패하였습니다. 다시 시도해 주세요.");
         }
+    }
+
+    @Override
+    public List<ReCaptchaEntity> findAll() throws SQLException {
+        List<ReCaptchaEntity> list = reCaptchaDao.findAll();
+
+        return list;
     }
 
 }

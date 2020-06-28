@@ -1,19 +1,32 @@
 package com.github.torissi.resttemplate.controller;
 
+import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
 import com.github.torissi.resttemplate.model.response.ResultResponse;
 import com.github.torissi.resttemplate.service.ReCaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.sql.SQLException;
+import java.util.List;
 
 @RestController
 public class ReCaptChaController {
 
     @Autowired
     ReCaptchaService reCaptchaService;
+
+    @GetMapping("/")
+    public String indexPage(Model model) throws SQLException {
+        List<ReCaptchaEntity> entities = reCaptchaService.findAll();
+
+        model.addAttribute("list", entities);
+        return "index"; //index 페이지로 보내고 싶다,,,,,
+    }
 
     @PostMapping("/captcha") //rest api
     public ResponseEntity<ResultResponse> captcha(@RequestParam String token) {
@@ -32,6 +45,7 @@ public class ReCaptChaController {
         resultResponse.setCode(200);
         return ResponseEntity.ok(resultResponse);
     }
+
 }
 
 /*

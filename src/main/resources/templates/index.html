@@ -12,8 +12,43 @@
         <input type="button" class="_recaprchaBtn" value="로봇 검사하기">
     </form>
 
+    <table>
+        <thead>
+            <tr>
+                <th>NO</th>
+                <th>action</th>
+                <th>challenge_ts</th>
+                <th>hostname</th>
+                <th>score</th>
+                <th>success</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
     <script type="text/javascript">
         $(function(){
+            $.ajax({
+                url: '/',
+                method : 'GET',
+                processData : true,
+                crossDomain : true,
+                xhrFields : {
+                withCredentials : true
+                }
+            }).done(function(data) {
+
+            });
+
             $("._recaprchaBtn").on("click", function(){
                 grecaptcha.ready(function() {
                     grecaptcha.execute('6LceRwEVAAAAAMAnoXnoPLm-6M-zRAJSnhSOgFyj', {
