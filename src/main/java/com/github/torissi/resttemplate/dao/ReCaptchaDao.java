@@ -10,5 +10,6 @@ public interface ReCaptchaDao {
 
     List<ReCaptchaEntity> findAll() throws SQLException;
     void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException;
+    void insertBulkReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException;
 
 }
