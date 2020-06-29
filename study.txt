@@ -1,0 +1,27 @@
+* Bean
+    - 스프링 IoC(Inversion of Control) 컨테이너에 의해서 관리되고 애플리케이션의 핵심을 이루는 객체들을 스프링에서는 빈즈(Beans)라 함
+    - 빈은 스프링 Ioc 컨테이너에 의해서 인스턴스화되어 조립되거나 관리되는 객체
+    - 빈은 수많은 객체들 중의 하나임
+    - 빈과 빈 사이의 의존성은 컨테이너가 사용하는 메타데이터 환경설정에 반영됨
+
+* Bean lifecycle
+    - 컨테이너에서 Bean Configuration를 읽음
+    - 컨테이너에서 Bean Definition을 생성
+    - Bean 생성
+        => Bean의 생성은 IoC Container를 통해 진행(싱글톤 방식)
+        => 싱글톤 방식 -> 인스턴스가 없다 : 생성 / 있다 : 원래 있던 방식으로 처리
+    - Bean 초기화
+        => Bean 생성 이후 초기화 수행
+        => 초기화를 하기 위한 다양한 방법을 제공
+            => InitialIzingBean 구현
+            => init-method지정 (xml or java  annotation config)
+            => @PostConstruct 지정
+    - Bean 사용
+         => IoC Container를 통해 생성된 Bean을 사용
+         => 재사용시 인스턴스가 새로 생성되지 않는 한 초기화 발생X
+    - Bean 소멸
+        => 컨테이너가 종료될 때 destory 메소드가 선언되어 있으면 수행
+        => 소멸 시 사용할 수 있는 다양한 destroy 방법이 있음
+            => DisponsableBean 인터페이스를 직접 구현 (destroy() 메소드)
+            => destroy-method를 넣어서 destory 시점에 동작 수행 (xml or java annotation config)
+            => @Predestory 지정
