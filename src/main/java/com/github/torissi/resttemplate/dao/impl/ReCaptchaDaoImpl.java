@@ -32,13 +32,26 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         );
     }
 
+    private PreparedStatement setStatement (Connection c, String sql) throws Exception {
+        Connection connection = c;
+        return connection.prepareStatement(sql);
+    }
+
+    /*public void test() throws Exception{
+        final PreparedStatement preparedStatement = setStatement(getConnection(), "SELECT * FROM re_captcha_entity");
+
+    }*/
+
     @Override
     public List<ReCaptchaEntity> findAll() {
         List<ReCaptchaEntity> reCaptchaEntityList = new ArrayList<>();
+        String sql = "SELECT * FROM re_captcha_entity";
 
         try (
-                Connection connection = getConnection(); //커넥션 연결
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM re_captcha_entity");
+                /*Connection connection = getConnection(); //커넥션 연결
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM re_captcha_entity");*/
+                PreparedStatement preparedStatement = setStatement(getConnection(), sql);
+
                 ResultSet rs = preparedStatement.executeQuery(); //sql문을 실행시키고, 그 결과를 resultSet에 담는다
         ) {
             while (rs.next()) { //
@@ -117,8 +130,6 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
             //logger.error("INSERT 실행 중 문제 발생!", e);
         }
     }
-
-
 }
 
 
