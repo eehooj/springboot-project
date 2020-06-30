@@ -28,7 +28,7 @@ class CaptchaServiceImplTest {
     ReCaptchaService reCaptchaService;
 
     @Test
-    public void getScore() throws ReCaptchaException, SQLException {
+    public void getScore() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
         MockRestServiceServer mockRestServiceServer

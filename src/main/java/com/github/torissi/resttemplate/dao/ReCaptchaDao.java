@@ -9,7 +9,7 @@ import java.util.List;
 public interface ReCaptchaDao {
 
     List<ReCaptchaEntity> findAll() throws SQLException;
-    void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException;
+    void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException, Exception;
     void insertBulkReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException;
 
 }

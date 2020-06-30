@@ -25,10 +25,10 @@ public class ReCaptchaDaoImplTest {
         List<ReCaptchaEntity> list = reCaptchaDaoImpl.findAll();
 
         ReCaptchaEntity entity = list.get(0);
-        assertThat(entity.getScore()).isEqualTo(0.9);
+        assertThat(entity.getSuccess()).isEqualTo(true);
     }
 
-    int loop = 100_000;
+    int loop = 5;
 
     @Test
     public void test(){
@@ -36,7 +36,7 @@ public class ReCaptchaDaoImplTest {
         entities.stream().forEach(i -> {
             try {
                 reCaptchaDaoImpl.insertReCaptcha(i);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -48,7 +48,7 @@ public class ReCaptchaDaoImplTest {
         entities.stream().forEach(i -> {
             try {
                 reCaptchaDaoImpl.insertReCaptcha(i);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

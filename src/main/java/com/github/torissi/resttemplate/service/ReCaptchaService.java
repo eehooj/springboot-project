@@ -10,7 +10,7 @@ import java.util.List;
 public interface ReCaptchaService {
 
 
-    Boolean reCaptchaDecision(String token) throws ReCaptchaException, SQLException;
+    Boolean reCaptchaDecision(String token) throws Exception;
 
     List<ReCaptchaEntity> findAll() throws SQLException;
 }

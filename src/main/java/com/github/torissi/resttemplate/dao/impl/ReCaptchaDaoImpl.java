@@ -3,6 +3,8 @@ package com.github.torissi.resttemplate.dao.impl;
 import com.github.torissi.resttemplate.dao.ReCaptchaDao;
 import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -17,6 +19,12 @@ import java.util.stream.IntStream;
 @Repository
 public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
+    private static Logger logger = LoggerFactory.getLogger(ReCaptchaDaoImpl.class);
+
+    private static String SELECT_ALL_SQL = "SELECT * FROM re_captcha_entity";
+
+    private static String INSERT_SQL = "insert into re_captcha_entity (success, challenge_ts, action, hostname, score) values(?, ?, ?, ?, ?)";
+
     /*private DataSource dataSource;
     public ReCaptchaDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -26,14 +34,19 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         return DriverManager.getConnection(
                 // 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드
                 // 연결에 성공하면 DB와 연결된 상태를 Connection 객체로 표현하여 반환
-                "jdbc:mysql://192.168.99.100:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
+                "jdbc:mysql://localhost:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
                 "root",
-                "resttemplate"
+                "root"
         );
     }
 
     private PreparedStatement setStatement (Connection c, String sql) throws Exception {
         Connection connection = c;
+
+        logger.info(connection.getMetaData().getURL());
+        logger.info(connection.getMetaData().getUserName());
+        logger.info(connection.getMetaData().getDriverName());
+
         return connection.prepareStatement(sql);
     }
 
@@ -45,12 +58,12 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
     @Override
     public List<ReCaptchaEntity> findAll() {
         List<ReCaptchaEntity> reCaptchaEntityList = new ArrayList<>();
-        String sql = "SELECT * FROM re_captcha_entity";
+
 
         try (
                 /*Connection connection = getConnection(); //커넥션 연결
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM re_captcha_entity");*/
-                PreparedStatement preparedStatement = setStatement(getConnection(), sql);
+                PreparedStatement preparedStatement = setStatement(getConnection(), SELECT_ALL_SQL);
 
                 ResultSet rs = preparedStatement.executeQuery(); //sql문을 실행시키고, 그 결과를 resultSet에 담는다
         ) {
@@ -66,7 +79,7 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
                 reCaptchaEntityList.add(re);
             }
         } catch (Exception e) {
-//            logger.error("select 실행 중 문제 발생!", e);
+            logger.error("select 실행 중 문제 발생!", e);
         }
         return reCaptchaEntityList;
     }
@@ -78,6 +91,7 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         final IntStream intStream = IntStream.range(0, loop);
         intStream.forEach(a -> {
             list.add(ReCaptchaEntity.builder()
+                    .success(true)
                     .action(UUID.randomUUID().toString())
                     .challenge_ts(UUID.randomUUID().toString())
                     .hostname(UUID.randomUUID().toString())
@@ -88,33 +102,20 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
     }
 
     @Override
-    public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException {
+    public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws Exception {
         try (
-                Connection connection = getConnection(); //커넥션 연결
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        "insert into re_captcha_entity (success, challenge_ts, action, hostname, score)"
-                                + " values(?, ?, ?, ?, ?)"
-                );
+                PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL);
         ) {
-            preparedStatement.setBoolean(1, reCaptchaEntity.getSuccess()); // 첫번째 ?에 값을 넣어줘
-            preparedStatement.setString(2, reCaptchaEntity.getChallenge_ts());
-            preparedStatement.setString(3, reCaptchaEntity.getAction());
-            preparedStatement.setString(4, reCaptchaEntity.getHostname());
-            preparedStatement.setFloat(5, reCaptchaEntity.getScore());
-            preparedStatement.execute();
+            setStatement(preparedStatement, reCaptchaEntity).execute();
         } catch (Exception e) {
-            //logger.error("INSERT 실행 중 문제 발생!", e);
+            logger.error("INSERT 실행 중 문제 발생!", e);
         }
     }
 
     @Override
     public void insertBulkReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException {
         try (
-                Connection connection = getConnection(); //커넥션 연결
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                                "insert into re_captcha_entity (success, challenge_ts, action, hostname, score)"
-                                    + " values(?, ?, ?, ?, ?)"
-                );
+                PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL);
         ){
 
             for (int i=0; i < 5; i++) {
@@ -127,8 +128,18 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
             preparedStatement.executeBatch();
 
         } catch (Exception e) {
-            //logger.error("INSERT 실행 중 문제 발생!", e);
+            logger.error("INSERT 실행 중 문제 발생!", e);
         }
+    }
+
+    public PreparedStatement setStatement(PreparedStatement statement, ReCaptchaEntity entity) throws SQLException {
+        statement.setBoolean(1, entity.getSuccess()); // 첫번째 ?에 값을 넣어줘
+        statement.setString(2, entity.getChallenge_ts());
+        statement.setString(3, entity.getAction());
+        statement.setString(4, entity.getHostname());
+        statement.setFloat(5, entity.getScore());
+
+        return statement;
     }
 }
 

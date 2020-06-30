@@ -30,7 +30,7 @@ public class ReCaptchaServiceImpl implements ReCaptchaService {
     }
 
     @Override
-    public Boolean reCaptchaDecision(String token) throws ReCaptchaException, SQLException {
+    public Boolean reCaptchaDecision(String token) throws Exception {
         RestTemplate restTemplate = new RestTemplate(); //restremplate 사용
 
         HttpHeaders headers = new HttpHeaders();
