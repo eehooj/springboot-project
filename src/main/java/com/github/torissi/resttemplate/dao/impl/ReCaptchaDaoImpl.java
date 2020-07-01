@@ -157,4 +157,12 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
  *  - close를 호출하려면 if와 try-catch 구문이 많아짐 => close()를 실수로 안적을 수 있음..(내가 실제 그럼..ㅎ_
  *  - AutoCloseable은 자바7 부터 지원하기 시작한 interface
  *  - 내가 만든 자원을 try resource로 사용하고 싶으면 AutoCloseable을 implements하면 됨
+ *
+ * call by value
+ *  - 메소드 호출 시 사용되는 인자의 메모리에 저장되어 있는 값을 복사하여 전달
+ *  - 자바의 기본형, 객체는 call by reference
+ *
+ * call by reference
+ *  - 메소드 호출 시 사용되는 인자 값의 메모리 주소를 복사하여 전달
+ *  - 객체의 참조 값을 직접 바꾸는 것이 아니라 그 객체의 멤버변수에 접근하여 그 값을 바꾸면 call by reference
  * */
