@@ -34,9 +34,9 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         return DriverManager.getConnection(
                 // 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드
                 // 연결에 성공하면 DB와 연결된 상태를 Connection 객체로 표현하여 반환
-                "jdbc:mysql://localhost:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
+                "jdbc:mysql://192.168.99.100:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
                 "root",
-                "root"
+                "resttemplate"
         );
     }
 
@@ -102,44 +102,33 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
     }
 
     @Override
-    public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) throws Exception {
-        try (
-                PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL);
-        ) {
-            setStatement(preparedStatement, reCaptchaEntity).execute();
+    public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) {
+        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)) {
+            setStatement(preparedStatement, reCaptchaEntity);
+            preparedStatement.execute();
         } catch (Exception e) {
-            logger.error("INSERT 실행 중 문제 발생!", e);
+            logger.error("단일 INSERT 실행 중 문제 발생!", e);
         }
     }
 
     @Override
-    public void insertBulkReCaptcha(ReCaptchaEntity reCaptchaEntity) throws SQLException {
-        try (
-                PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL);
-        ){
-
-            for (int i=0; i < 5; i++) {
-                preparedStatement.setBoolean(1, reCaptchaEntity.getSuccess()); // 첫번째 ?에 값을 넣어줘
-                preparedStatement.setString(2, reCaptchaEntity.getChallenge_ts());
-                preparedStatement.setString(3, reCaptchaEntity.getAction());
-                preparedStatement.setString(4, reCaptchaEntity.getHostname());
-                preparedStatement.setFloat(5, reCaptchaEntity.getScore());
+    public void insertBulkReCaptcha(List<ReCaptchaEntity> entityList) { //list
+        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)){
+            for (ReCaptchaEntity s : entityList) {
+                setStatement(preparedStatement, s);
             }
             preparedStatement.executeBatch();
-
         } catch (Exception e) {
-            logger.error("INSERT 실행 중 문제 발생!", e);
+            logger.error("대량 INSERT 실행 중 문제 발생!", e);
         }
     }
 
-    public PreparedStatement setStatement(PreparedStatement statement, ReCaptchaEntity entity) throws SQLException {
+    public void setStatement(PreparedStatement statement, ReCaptchaEntity entity) throws SQLException {
         statement.setBoolean(1, entity.getSuccess()); // 첫번째 ?에 값을 넣어줘
         statement.setString(2, entity.getChallenge_ts());
         statement.setString(3, entity.getAction());
         statement.setString(4, entity.getHostname());
         statement.setFloat(5, entity.getScore());
-
-        return statement;
     }
 }
 
