@@ -34,9 +34,9 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         return DriverManager.getConnection(
                 // 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드
                 // 연결에 성공하면 DB와 연결된 상태를 Connection 객체로 표현하여 반환
-                "jdbc:mysql://192.168.99.100:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
+                "jdbc:mysql://localhost:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
                 "root",
-                "resttemplate"
+                "root"
         );
     }
 
@@ -82,23 +82,6 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
             logger.error("select 실행 중 문제 발생!", e);
         }
         return reCaptchaEntityList;
-    }
-
-
-    public List<ReCaptchaEntity> generateData(int loop) {
-        List<ReCaptchaEntity> list = new ArrayList<>();
-
-        final IntStream intStream = IntStream.range(0, loop);
-        intStream.forEach(a -> {
-            list.add(ReCaptchaEntity.builder()
-                    .success(true)
-                    .action(UUID.randomUUID().toString())
-                    .challenge_ts(UUID.randomUUID().toString())
-                    .hostname(UUID.randomUUID().toString())
-                    .score(new Random().nextFloat())
-                    .build());
-        });
-        return list;
     }
 
     @Override

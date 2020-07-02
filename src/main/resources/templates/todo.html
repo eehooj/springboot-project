@@ -8,14 +8,17 @@
 <h3>한 일</h3>
 - getConnection을 클래스로 구현함
 - 단일, 다량 인서트문 만들기
+- 단일, 다량 인서트문 공통의 코드 메소드로 빼기
+- properties에 datasource 설정을 안하면 빌드 오류남
+    => pom.xml에 주입을 했기 때문에 스프링 부트는 기본 파일을 먼저 훑어봄(application.properties)
+    => 때문에 application.properties에도 설정을 해주어야 함
 
 <h3>진행 중</h3>
-- 단일, 다량 인서트문 공통의 코드 메소드로 빼기
-  => bulk for문...statement에 담는 부분 공통으로 빼다보니 이상해짐... 생각 더 필요할 듯 ㅠㅠ
-- properties에 datasource 설정을 안하면 빌드 오류남.....이상해.....
+- generateData 메소드를 테스트쪽으로 옮기고 테스트 할 떄 junit test parameter 받는 방식으로 하기
+    => 단일 건은 성공
+    => 다량 데이터를 test할때 list로 보내야하는데 steam은 하나씩 보내줌,,,ㅎ ,,,, ㅠ
 
 <h3>해야할 일</h3>
-- generateData 메소드를 테스트쪽으로 옮기고 테스트 할 떄 junit test parameter 받는 방식으로 하기
 - test할 떄 단일건 테스트 코드랑 다량 건 테스트 코드 각각 걸리는 시간 확인 해보기
 </body>
 </html>
