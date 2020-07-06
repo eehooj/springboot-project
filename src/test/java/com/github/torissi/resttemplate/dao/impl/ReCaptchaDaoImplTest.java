@@ -1,13 +1,12 @@
 package com.github.torissi.resttemplate.dao.impl;
 
 import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -20,6 +19,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -28,7 +28,7 @@ public class ReCaptchaDaoImplTest {
     @Autowired
     private ReCaptchaDaoImpl reCaptchaDaoImpl;
 
-    private static final int loop = 3;
+    private static final int loop = 50000;
 
     static Stream<ReCaptchaEntity> generateData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
@@ -46,7 +46,7 @@ public class ReCaptchaDaoImplTest {
         return list.stream();
     }
 
-    static Stream<ReCaptchaEntity> generateBatchData() {
+    static Stream<Arguments> generateBatchData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
 
         final IntStream intStream = IntStream.range(0, loop);
@@ -59,7 +59,8 @@ public class ReCaptchaDaoImplTest {
                     .score(new Random().nextFloat())
                     .build());
         });
-        return list.stream();
+
+        return Stream.of( arguments(list) );
     }
 
     @Test
