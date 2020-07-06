@@ -46,6 +46,22 @@ public class ReCaptchaDaoImplTest {
         return list.stream();
     }
 
+    static Stream<ReCaptchaEntity> generateBatchData() {
+        List<ReCaptchaEntity> list = new ArrayList<>();
+
+        final IntStream intStream = IntStream.range(0, loop);
+        intStream.forEach(a -> {
+            list.add(ReCaptchaEntity.builder()
+                    .success(true)
+                    .action(UUID.randomUUID().toString())
+                    .challenge_ts(UUID.randomUUID().toString())
+                    .hostname(UUID.randomUUID().toString())
+                    .score(new Random().nextFloat())
+                    .build());
+        });
+        return list.stream();
+    }
+
     @Test
     public void findAll() throws SQLException {
         List<ReCaptchaEntity> list = reCaptchaDaoImpl.findAll();
@@ -65,17 +81,13 @@ public class ReCaptchaDaoImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateData")
-    public void testbatch(ReCaptchaEntity entity){
-        /*List<ReCaptchaEntity> entities = new ArrayList<>();
-
-        entities.add(entity);
-
+    @MethodSource("generateBatchData")
+    public void testbatch(List<ReCaptchaEntity> entities){
         try {
             reCaptchaDaoImpl.insertBulkReCaptcha(entities);
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
 }
