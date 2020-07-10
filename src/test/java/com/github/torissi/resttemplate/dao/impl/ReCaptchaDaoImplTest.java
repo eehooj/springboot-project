@@ -1,6 +1,7 @@
 package com.github.torissi.resttemplate.dao.impl;
 
 import com.github.torissi.resttemplate.model.entity.ReCaptchaEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@Slf4j
+@Transactional // 테스트 데이터는 실제 DB에 쌓이면 안됨.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ReCaptchaDaoImplTest {
@@ -28,7 +33,7 @@ public class ReCaptchaDaoImplTest {
     @Autowired
     private ReCaptchaDaoImpl reCaptchaDaoImpl;
 
-    private static final int loop = 50000;
+    private static final int loop = 10000;
 
     static Stream<ReCaptchaEntity> generateData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
@@ -72,23 +77,34 @@ public class ReCaptchaDaoImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateData")
-    public void test(ReCaptchaEntity entity){
+    @MethodSource("generateBatchData")
+    public void test(List<ReCaptchaEntity> entities){ // 데이터 생성 메소드를 하나로 쓸수 있음
+        // 스탑워치는 테스트쪽으로 뺄것
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         try {
-            reCaptchaDaoImpl.insertReCaptcha(entity);
+            for(ReCaptchaEntity entity : entities) {
+                reCaptchaDaoImpl.insertReCaptcha(entity);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        stopWatch.stop();
+        log.error(String.valueOf(stopWatch.getTotalTimeSeconds()));
     }
 
     @ParameterizedTest
     @MethodSource("generateBatchData")
     public void testbatch(List<ReCaptchaEntity> entities){
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         try {
             reCaptchaDaoImpl.insertBulkReCaptcha(entities);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        stopWatch.stop();
+        log.error(String.valueOf(stopWatch.getTotalTimeSeconds()));
     }
 
 }

@@ -6,21 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StopWatch;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Repository
 public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
-    private static Logger logger = LoggerFactory.getLogger(ReCaptchaDaoImpl.class);
+
+    //@Slf4j이면 선언안해도됨
+//   private static Logger logger = LoggerFactory.getLogger(ReCaptchaDaoImpl.class);
 
     private static String SELECT_ALL_SQL = "SELECT * FROM re_captcha_entity";
 
@@ -35,18 +32,18 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         return DriverManager.getConnection(
                 // 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드
                 // 연결에 성공하면 DB와 연결된 상태를 Connection 객체로 표현하여 반환
-                "jdbc:mysql://localhost:3306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
-                "root",
-                "root"
+                "jdbc:mysql://totoku103.iptime.org:33306/spring_study?serverTimezone=UTC&characterEncoding=UTF-8",
+                "test-totoku",
+                "totoku103"
         );
     }
 
-    private PreparedStatement setStatement (Connection c, String sql) throws Exception {
+    private PreparedStatement setStatement(Connection c, String sql) throws Exception {
         Connection connection = c;
 
-        logger.info(connection.getMetaData().getURL());
-        logger.info(connection.getMetaData().getUserName());
-        logger.info(connection.getMetaData().getDriverName());
+        log.info(connection.getMetaData().getURL());
+        log.info(connection.getMetaData().getUserName());
+        log.info(connection.getMetaData().getDriverName());
 
         return connection.prepareStatement(sql);
     }
@@ -80,41 +77,41 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
                 reCaptchaEntityList.add(re);
             }
         } catch (Exception e) {
-            logger.error("select 실행 중 문제 발생!", e);
+            log.error("select 실행 중 문제 발생!", e);
         }
         return reCaptchaEntityList;
     }
 
     @Override
     public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) {
-        StopWatch sw = new StopWatch();
-        sw.start();
         try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)) {
             setStatement(preparedStatement, reCaptchaEntity);
             preparedStatement.execute();
         } catch (Exception e) {
-            logger.error("단일 INSERT 실행 중 문제 발생!", e);
+            log.error("단일 INSERT 실행 중 문제 발생!", e);
         }
-        sw.stop();
-        logger.info("============단일 인서트==================== stopWatch : " + sw.toString());
     }
 
     @Override
     public void insertBulkReCaptcha(List<ReCaptchaEntity> entityList) { //list
-        StopWatch sw = new StopWatch();
-        sw.start();
-        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)){
+        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)) {
+            int count = 0;
             for (ReCaptchaEntity s : entityList) {
                 setStatement(preparedStatement, s);
                 preparedStatement.addBatch();
                 //preparedStatement.execute();
+
+                count++;
+                if(count % 1000 == 0){
+                    // addbatch가 많이 쌓임 ooe 발생
+                    preparedStatement.executeBatch();
+                }
             }
+            // 잔여 데이터 처리
             preparedStatement.executeBatch();
         } catch (Exception e) {
-            logger.error("대량 INSERT 실행 중 문제 발생!", e);
+            log.error("대량 INSERT 실행 중 문제 발생!", e);
         }
-        sw.stop();
-        logger.info("============단일 인서트==================== stopWatch : " + sw.toString());
     }
 
     // ============다량 인서트==================== stopWatch : StopWatch '': running time = 310840142400 ns; [] took 310840142400 ns = 100%
