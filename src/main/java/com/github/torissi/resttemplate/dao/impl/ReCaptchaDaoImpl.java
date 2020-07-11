@@ -139,4 +139,13 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
  * call by reference
  *  - 메소드 호출 시 사용되는 인자 값의 메모리 주소를 복사하여 전달
  *  - 객체의 참조 값을 직접 바꾸는 것이 아니라 그 객체의 멤버변수에 접근(getter, setter)하여 그 값을 바꾸면 call by reference
+ *
+ * connection pool lifecycle
+ *  - 어플리케이션 데이터 레이어는 데이터소스 커넥션을 위해 datasource에 요청함
+ *  - datasource는 database driver를 이용하여 데이터베이스 커넥션을 열음
+ *  - 데이터베이스 연결이 생성되고, tcp 소켓이 열림
+ *  - 어플리케이션은 데이터 배이스를 읽고 씀
+ *  - 커넥션이 더이상 요청되지 않으면 닫힘
+ *  - 소켓이 닫힘
+ *
  * */
