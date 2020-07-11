@@ -33,7 +33,7 @@ public class ReCaptchaDaoImplTest {
     @Autowired
     private ReCaptchaDaoImpl reCaptchaDaoImpl;
 
-    private static final int loop = 10000;
+    private static final int loop = 600;
 
     static Stream<ReCaptchaEntity> generateData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
@@ -90,7 +90,8 @@ public class ReCaptchaDaoImplTest {
             e.printStackTrace();
         }
         stopWatch.stop();
-        log.error(String.valueOf(stopWatch.getTotalTimeSeconds()));
+        log.error("+++++++++++++++++++++++ 단일 인서트 " + String.valueOf(stopWatch.getTotalTimeSeconds()));
+        //+++++++++++++++++++++++ 단일 인서트 95.4796305  //1m 37s 300ms
     }
 
     @ParameterizedTest
@@ -104,7 +105,8 @@ public class ReCaptchaDaoImplTest {
             e.printStackTrace();
         }
         stopWatch.stop();
-        log.error(String.valueOf(stopWatch.getTotalTimeSeconds()));
+        log.error("+++++++++++++++++++++++ 다량 인서트 " + String.valueOf(stopWatch.getTotalTimeSeconds()));
+        //+++++++++++++++++++++++ 다량 인서트 10.7458575   //12s 462ms
     }
 
 }

@@ -23,11 +23,6 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
     private static String INSERT_SQL = "insert into re_captcha_entity (success, challenge_ts, action, hostname, score) values(?, ?, ?, ?, ?)";
 
-    /*private DataSource dataSource;
-    public ReCaptchaDaoImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }*/
-
     private Connection getConnection() throws Exception {
         return DriverManager.getConnection(
                 // 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드
@@ -38,31 +33,13 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         );
     }
 
-    private PreparedStatement setStatement(Connection c, String sql) throws Exception {
-        Connection connection = c;
-
-        log.info(connection.getMetaData().getURL());
-        log.info(connection.getMetaData().getUserName());
-        log.info(connection.getMetaData().getDriverName());
-
-        return connection.prepareStatement(sql);
-    }
-
-    /*public void test() throws Exception{
-        final PreparedStatement preparedStatement = setStatement(getConnection(), "SELECT * FROM re_captcha_entity");
-
-    }*/
-
     @Override
     public List<ReCaptchaEntity> findAll() {
         List<ReCaptchaEntity> reCaptchaEntityList = new ArrayList<>();
 
-
         try (
-                /*Connection connection = getConnection(); //커넥션 연결
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM re_captcha_entity");*/
-                PreparedStatement preparedStatement = setStatement(getConnection(), SELECT_ALL_SQL);
-
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_SQL);
                 ResultSet rs = preparedStatement.executeQuery(); //sql문을 실행시키고, 그 결과를 resultSet에 담는다
         ) {
             while (rs.next()) { //
@@ -75,6 +52,7 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
                         .build();
 
                 reCaptchaEntityList.add(re);
+
             }
         } catch (Exception e) {
             log.error("select 실행 중 문제 발생!", e);
@@ -84,9 +62,12 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
     @Override
     public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) {
-        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL);
+        ) {
             setStatement(preparedStatement, reCaptchaEntity);
-            preparedStatement.execute();
+            preparedStatement.execute(); //쿼리 실행
         } catch (Exception e) {
             log.error("단일 INSERT 실행 중 문제 발생!", e);
         }
@@ -94,16 +75,18 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
     @Override
     public void insertBulkReCaptcha(List<ReCaptchaEntity> entityList) { //list
-        try (PreparedStatement preparedStatement = setStatement(getConnection(), INSERT_SQL)) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL);
+        ) {
             int count = 0;
             for (ReCaptchaEntity s : entityList) {
                 setStatement(preparedStatement, s);
                 preparedStatement.addBatch();
-                //preparedStatement.execute();
 
                 count++;
                 if(count % 1000 == 0){
-                    // addbatch가 많이 쌓임 ooe 발생
+                    // addbatch가 많이 쌓이면 ooe(Out Of Memory Exception) 발생
                     preparedStatement.executeBatch();
                 }
             }
@@ -113,10 +96,6 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
             log.error("대량 INSERT 실행 중 문제 발생!", e);
         }
     }
-
-    // ============다량 인서트==================== stopWatch : StopWatch '': running time = 310840142400 ns; [] took 310840142400 ns = 100%
-    // ============단일 인서트==================== stopWatch : StopWatch '': running time = 287170245800 ns; [] took 287170245800 ns = 100%
-    // ============다량 인서트==================== stopWatch : StopWatch '': running time = 299697113700 ns; [] took 299697113700 ns = 100%
 
     public void setStatement(PreparedStatement statement, ReCaptchaEntity entity) throws SQLException {
         statement.setBoolean(1, entity.getSuccess()); // 첫번째 ?에 값을 넣어줘
@@ -145,7 +124,7 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
  *  - connection을 만들기 위한 정보를 프로그램 내에 하드코딩함
  *  - db정보를 수정하기 위해서는 프로그램 코드를 변경해야함 => dbms에 종속적
  *
- * try resource
+ * try with resource
  *  - try(...)에서 선언된 객체들에 대해서 try가 종료될 때 자동으로 자원을 해제
  *  - try에서 선언된 객체가 AutoCloseable을 구현하였다면 Java는 try구문이 종료될 때 객체의 close() 메소드를 호출
  *  - 코드를 짧고 간결하게 만들어 읽기 쉽고 유지보수가 쉬움

@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
 <body>
 <h3>한 일</h3>
 - getConnection을 클래스로 구현함
@@ -12,13 +8,18 @@
 - properties에 datasource 설정을 안하면 빌드 오류남
     => pom.xml에 주입을 했기 때문에 스프링 부트는 기본 파일을 먼저 훑어봄(application.properties)
     => 때문에 application.properties에도 설정을 해주어야 함
+- generateData 메소드를 테스트쪽으로 옮기고 테스트 할 떄 junit test parameter 받는 방식으로 하기
 
 <h3>진행 중</h3>
-- generateData 메소드를 테스트쪽으로 옮기고 테스트 할 떄 junit test parameter 받는 방식으로 하기
-    => 단일 건은 성공
-    => 다량 데이터를 test할때 list로 보내야하는데 steam은 하나씩 보내줌,,,ㅎ ,,,, ㅠ
+- 리더님이 수정해주신 사항에 대해 공부하기
+    => too many connection 에러 남 ㅠㅠ
+
 
 <h3>해야할 일</h3>
 - test할 떄 단일건 테스트 코드랑 다량 건 테스트 코드 각각 걸리는 시간 확인 해보기
 </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
 </html>
