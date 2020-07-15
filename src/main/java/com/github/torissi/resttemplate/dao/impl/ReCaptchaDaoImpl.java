@@ -81,6 +81,10 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
         ) {
             int count = 0;
             for (ReCaptchaEntity s : entityList) {
+                if (count == 3) {
+                    throw new RuntimeException();
+                }
+
                 setStatement(preparedStatement, s);
                 preparedStatement.addBatch();
 

@@ -33,7 +33,7 @@ public class ReCaptchaDaoImplTest {
     @Autowired
     private ReCaptchaDaoImpl reCaptchaDaoImpl;
 
-    private static final int loop = 600;
+    private static final int loop = 10;
 
     static Stream<ReCaptchaEntity> generateData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
@@ -83,8 +83,14 @@ public class ReCaptchaDaoImplTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try {
+            int idxCnt = 0;
+
             for(ReCaptchaEntity entity : entities) {
+                if (idxCnt == 3) {
+                    throw new RuntimeException();
+                }
                 reCaptchaDaoImpl.insertReCaptcha(entity);
+                idxCnt++;
             }
         } catch (Exception e) {
             e.printStackTrace();
