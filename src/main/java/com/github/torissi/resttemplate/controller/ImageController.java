@@ -13,9 +13,11 @@ public class ImageController {
     public void image(MultipartHttpServletRequest mp) {
         System.out.println();
     }
+    //포스트맨으로 아주 손쉽게 전송이 가능
 
     @PostMapping("/file")
     public void file(@RequestParam MultipartFile mp) {
         System.out.println();
     }
+    //400 Bad Request ㅠㅠㅠㅠ => 둘의 차이점이 뭘까 자기 전 고민해보기
 }
