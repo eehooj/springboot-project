@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="/webjars/jquery/3.5.1/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../../webapp/ckeditor/ckeditor.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LceRwEVAAAAAMAnoXnoPLm-6M-zRAJSnhSOgFyj"></script>
+    <title>CK Editor</title>
+</head>
+<body>
+    <h1>CK Editor</h1>
+    <textarea id="editor"></textarea>
+
+
+
+    <script type="text/javascript">
+        $(function() {
+            CKEDITOR.replace('editor', {
+                filebrowserUploadUrl: '/upload'
+            });
+        });
+
+    </script>
+</body>
+</html>
