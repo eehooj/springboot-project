@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @Repository
-public class ReCaptchaDaoImpl implements ReCaptchaDao {
+public class ReCaptchaDaoImpl1 implements ReCaptchaDao {
 
 
     //@Slf4j이면 선언안해도됨
@@ -60,17 +60,13 @@ public class ReCaptchaDaoImpl implements ReCaptchaDao {
 
     @Override
     public void insertReCaptcha(ReCaptchaEntity reCaptchaEntity) {
-        Connection conn = null;
         try (
                 Connection connection = getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL);
         ) {
-            conn = connection;
             connection.setAutoCommit(false);
-            Savepoint sp = connection.setSavepoint("sp");
             setStatement(preparedStatement, reCaptchaEntity);
             preparedStatement.execute(); //쿼리 실행
-            connection.commit();
         } catch (Exception e) {
             log.error("단일 INSERT 실행 중 문제 발생!", e);
         }

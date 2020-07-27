@@ -25,9 +25,6 @@ public class ReCaptchaServiceImpl implements ReCaptchaService {
 
     private ReCaptchaDao reCaptchaDao;
 
-    public ReCaptchaServiceImpl(ReCaptchaDao reCaptchaDao) {
-        this.reCaptchaDao = reCaptchaDao;
-    }
 
     @Override
     public Boolean reCaptchaDecision(String token) throws Exception {
