@@ -79,22 +79,28 @@ public class ReCaptchaDaoImpl1 implements ReCaptchaDao {
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL);
         ) {
             int count = 0;
-            for (ReCaptchaEntity s : entityList) {
-                if (count == 3) {
-                    throw new RuntimeException();
-                }
+            int batchCnt = 0;
+            connection.setAutoCommit(false);
 
+            for (ReCaptchaEntity s : entityList) {
                 setStatement(preparedStatement, s);
                 preparedStatement.addBatch();
 
                 count++;
-                if(count % 1000 == 0){
+                if(count % 10 == 0){
                     // addbatch가 많이 쌓이면 ooe(Out Of Memory Exception) 발생
                     preparedStatement.executeBatch();
+                    batchCnt++;
+                }
+
+                if (batchCnt > 2) {
+                    throw new RuntimeException("==================== Exception 발생!!!!!!");
                 }
             }
             // 잔여 데이터 처리
             preparedStatement.executeBatch();
+
+            connection.commit();
         } catch (Exception e) {
             log.error("대량 INSERT 실행 중 문제 발생!", e);
         }
@@ -151,4 +157,7 @@ public class ReCaptchaDaoImpl1 implements ReCaptchaDao {
  *  - 커넥션이 더이상 요청되지 않으면 닫힘
  *  - 소켓이 닫힘
  *
+ * setAutoCommit()
+ *  - true/false의 여부에 따라 변경사항을 바로 DB에 반영할 것인가를 결정 (default = true)
+ *  - setAutoCommit(false) -> 쿼리 n번 수행 -> setAutoCommit(true) -> commit / rollback
  * */

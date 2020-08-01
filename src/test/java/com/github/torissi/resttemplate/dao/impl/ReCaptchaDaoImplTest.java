@@ -25,15 +25,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @Slf4j
-@Transactional // 테스트 데이터는 실제 DB에 쌓이면 안됨.
+//@Transactional // 테스트 데이터는 실제 DB에 쌓이면 안됨.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ReCaptchaDaoImplTest {
 
     @Autowired
-    private ReCaptchaDaoImpl reCaptchaDaoImpl;
+    private ReCaptchaDaoImpl1 reCaptchaDaoImpl;
 
-    private static final int loop = 10;
+    private static final int loop = 100;
 
     static Stream<ReCaptchaEntity> generateData() {
         List<ReCaptchaEntity> list = new ArrayList<>();
